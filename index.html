@@ -2,14 +2,13 @@
 <html>
 <head>
   <style>
-    /* Center the image or animation */
     body {
       margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: black; /* Set the body background to black */
+      background-color: black;
     }
     #loading-screen {
       position: absolute;
@@ -18,28 +17,30 @@
       width: 100%;
       height: 100%;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: black; /* Black background for the loading screen */
+      background-color: black;
       z-index: 9999;
     }
     #loading-screen img {
       width: 200px; /* Adjust size as needed */
+      margin-bottom: 20px; /* Space between image and spinner */
+    }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #333;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Base href and other meta tags -->
   <base href="/">
 
   <meta charset="UTF-8">
@@ -59,21 +60,36 @@
   <title>Network51</title>
   <link rel="manifest" href="manifest.json">
 
-  
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    const serviceWorkerVersion = "2999005150";
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
 </head>
 <body>
-   <!-- Placeholder loading screen -->
-   <div id="loading-screen">
-    <img src="assets/network51_white.png" alt="Loading...">
+  <!-- Loading screen with image and spinner -->
+  <div id="loading-screen">
+    <img src="assets/network51_white.png" alt="Network51 Logo">
+    <div class="spinner"></div>
   </div>
 
-  <script src="flutter_bootstrap.js" async></script>
-
   <script>
-    window.addEventListener('load', () => {
-      // Remove the loading screen when Flutter is ready
-      const loadingScreen = document.getElementById('loading-screen');
-      loadingScreen.style.display = 'none';
+    window.addEventListener('load', function() {
+      var loading = document.querySelector('#loading-screen');
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          }).then(function() {
+            // Hide loading screen
+            loading.style.display = 'none';
+          });
+        }
+      });
     });
   </script>
 </body>
